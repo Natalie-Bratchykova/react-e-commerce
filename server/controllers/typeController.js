@@ -12,6 +12,13 @@ class TypeController {
     const types = await Type.findAll();
     return res.json({ types });
   }
+
+  async getTypeById(req, res) {
+    const { id } = req.params;
+    console.log(req.params);
+    const type = await Type.findOne({ where: { id } });
+    return res.json({ type });
+  }
 }
 
 module.exports = new TypeController();

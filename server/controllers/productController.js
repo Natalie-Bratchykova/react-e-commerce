@@ -2,6 +2,8 @@ const crypto = require("crypto");
 const path = require("path");
 const { Product, ProductInfo } = require("../models/models");
 const ApiError = require("../error/apiError");
+const { Sequelize } = require("../db");
+const { Op } = require("sequelize");
 class ProductController {
   async createProduct(req, res, next) {
     try {
@@ -39,44 +41,48 @@ class ProductController {
   }
 
   async getProducts(req, res) {
-    let { typeId, brandId, page, limit } = req.query;
-    page = page || 1;
-    limit = limit || 3;
-    let offset = page * limit - limit;
-    let products;
+    try {
+      let { typeId, brandId, page, limit } = req.query;
+      page = page || 1;
+      limit = limit || 3;
+      let offset = page * limit - limit;
+      let products;
 
-    if (!typeId && !brandId) {
-      console.log("cond 1");
-      products = await Product.findAndCountAll({ limit, offset });
-    }
+      if (!typeId && !brandId) {
+        console.log("cond 1");
+        products = await Product.findAndCountAll({ limit, offset });
+      }
 
-    if (!brandId && typeId) {
-      console.log("cond 2");
-      products = await Product.findAndCountAll({
-        where: { typeId },
-        limit,
-        offset,
-      });
-    }
+      if (!brandId && typeId) {
+        console.log("cond 2");
+        products = await Product.findAndCountAll({
+          where: { typeId },
+          limit,
+          offset,
+        });
+      }
 
-    if (!typeId && brandId) {
-      console.log("cond 3");
-      products = await Product.findAndCountAll({
-        where: { brandId },
-        limit,
-        offset,
-      });
-    }
+      if (!typeId && brandId) {
+        console.log("cond 3");
+        products = await Product.findAndCountAll({
+          where: { brandId },
+          limit,
+          offset,
+        });
+      }
 
-    if (typeId && brandId) {
-      console.log("cond 4");
-      products = await Product.findAndCountAll({
-        where: { typeId, brandId },
-        limit,
-        offset,
-      });
+      if (typeId && brandId) {
+        console.log("cond 4");
+        products = await Product.findAndCountAll({
+          where: { typeId, brandId },
+          limit,
+          offset,
+        });
+      }
+      return res.json({ products });
+    } catch (error) {
+      res.json(error);
     }
-    return res.json({ products });
   }
 
   async getProductById(req, res, next) {
@@ -86,6 +92,19 @@ class ProductController {
       return res.json({ product });
     } catch (error) {
       next(ApiError.badRequest(error.message));
+    }
+  }
+
+  async getProductByName(req, res, next) {
+    try {
+      const { name } = req.params;
+      const products = await Product.findAll({
+        where: { name: { [Op.like]: `%${name}%` } },
+      });
+
+      return res.json({ products });
+    } catch (error) {
+      return res.json(error);
     }
   }
 }

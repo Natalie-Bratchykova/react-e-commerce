@@ -8,12 +8,17 @@ const path = require("path");
 const PORT = process.env.PORT || 2121;
 const models = require("./models/models");
 const errorHandlingMiddleware = require("./middleware/errorHandlingMiddleware");
-
+ 
 const app = express();
 app.use(express.static(path.resolve(__dirname, "static")));
 app.use(express.json());
 app.use(fileUpload());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_DOMAIN, 
+    credentials: true,
+  }) 
+);
 
 app.use("/api", router);
 app.use(errorHandlingMiddleware);
