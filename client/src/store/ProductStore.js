@@ -9,6 +9,8 @@ export default class ProductStore {
     this._selectedType = {};
     this._selectedBrand = {};
     this._searchProductName = "";
+    this._addedSuccessfully = false;
+    this._modalMessage = "";
     makeAutoObservable(this);
   }
 
@@ -36,6 +38,12 @@ export default class ProductStore {
   setSearchProductName(title) {
     this._searchProductName = title;
   }
+  setAddedSuccessfully(bool) {
+    this._addedSuccessfully = bool;
+  }
+  setModalMessage(str) {
+    this._modalMessage = str;
+  }
   get types() {
     return this._types;
   }
@@ -61,6 +69,9 @@ export default class ProductStore {
   get searchProductName() {
     return this._searchProductName;
   }
+  get modalMessage() {
+    this._modalMessage;
+  }
 
   getBrandById(id) {
     let resultedBrand = {};
@@ -81,4 +92,22 @@ export default class ProductStore {
     });
     return type;
   }
+  get addedSuccessfully() {
+    return this._addedSuccessfully;
+  }
+
+  // if I won't use it - delete
+  addType(type) {
+    this._types.push(type);
+  }
+
+  addBrand(brand) {
+    this._brands.push(brand);
+  }
+
+  addProduct(product) {
+    this._products.push(product);
+  }
+
+  
 }

@@ -24,11 +24,12 @@ export default class UserStore {
     return this._user;
   }
 
-  registration = async (email, password, role) => {
-    const response = await AuthService.registration(email, password, role);
+  registration = async (email, password, roles) => {
+    console.log('pass role for registration step1 ');
+    console.log(roles);
+    const response = await AuthService.registration(email, password, roles);
     console.log("user Store response");
     console.log(response);
-    //let userData = jwtDecode(response.data.token);
     this.setUser(response);
     this.setIsAuth(true);
     return {
@@ -47,18 +48,8 @@ export default class UserStore {
     };
   }
 
-  // async checkAuth() {
-  //   const response = await AuthService.checkAuth();
-  //   console.log("USER STORE CHECK AUTH METHOD");
-  //   console.log(response);
-  //   this.setIsAuth(true);
-  //   this.setUser(response);
 
-  //   console.log("Current state of user: " + this.isAuth);
-  //   return this.isAuth;
-  // }
-
-  logout() {
+ logout() {
     const token = AuthService.logout();
     this.setUser(null);
     this.setIsAuth(false);

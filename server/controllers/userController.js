@@ -10,6 +10,9 @@ class UserController {
       if (result.isEmpty()) {
         console.log("You started to register your account");
         const { email, password, roles } = req.body;
+        console.log(`user email = ${email}`);
+        console.log("user roles");
+        console.log(roles);
         const candidate = await User.findOne({ where: { email } });
         if (candidate) {
           return next(
@@ -18,7 +21,11 @@ class UserController {
         }
 
         const hashPassword = await bcrypt.hash(password, 7);
-        const user = await User.create({ email, password: hashPassword });
+        const user = await User.create({
+          email,
+          password: hashPassword,
+          roles,
+        });
         const userBasket = await Basket.create({ userId: user.id });
         const token = tokenService.generateTokens({
           id: user.id,
@@ -40,11 +47,13 @@ class UserController {
       const { email, password } = req.body;
       const user = await User.findOne({ where: { email } });
       if (!user) {
-        next(ApiError.badRequest("There is no user with such email"));
+        return next(ApiError.badRequest("There is no user with such email"));
       }
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        next(ApiError.badRequest("password is not correct for user " + email));
+        return next(
+          ApiError.badRequest("password is not correct for user " + email)
+        );
       }
       const token = tokenService.generateTokens({
         id: user.id,

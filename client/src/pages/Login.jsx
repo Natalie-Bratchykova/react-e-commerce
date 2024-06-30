@@ -20,7 +20,7 @@ function Login(props) {
         formText={`Don't have account yet?`}
         formLink={REGISTRATION_ROUTE}
         formTextAction={"Create account"}
-        buttonFunction={login}
+        buttonFunction={login} isRegistration={false}
       />
     </div>
   );

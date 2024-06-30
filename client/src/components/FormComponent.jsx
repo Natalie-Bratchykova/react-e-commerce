@@ -1,23 +1,24 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import { NavLink, useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { Context } from "../main";
-import { SHOP_ROUTE } from "../utils/const";
+import { ROLES, SHOP_ROUTE } from "../utils/const";
+import { InputGroup, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 function FormComponent({
   buttonText,
   buttonFunction,
   formText,
   formLink,
   formTextAction,
+  isRegistration,
 }) {
   const navigateTo = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-  const btnFunction = async (email, password) => {
+  const btnFunction = async (email, password, roles) => {
     try {
-      let data = await buttonFunction(email, password);
+      let data = await buttonFunction(email, password, roles);
       if (data) {
         navigateTo(SHOP_ROUTE);
       }
@@ -29,11 +30,16 @@ function FormComponent({
   };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [roles, setRoles] = useState([]);
+  const addRole = (roles) => {
+    setRoles(roles);
+    console.log("role in click function");
+    console.log(roles);
+  };
 
   return (
     <Container
       className="mx-auto mt-5 flex justify-content-center align-items-center"
-      // fluid
       style={{ width: window.innerWidth / 2 }}
     >
       <h2 className="text-center">{buttonText}</h2>
@@ -57,17 +63,46 @@ function FormComponent({
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
+        {isRegistration && (
+          <Form.Group>
+            <ToggleButtonGroup type="checkbox" value={roles} onChange={addRole}>
+              <ToggleButton id="check-btn1" value={ROLES.admin}>
+                Seller
+              </ToggleButton>
+              <ToggleButton id="check-btn2" value={ROLES.user}>
+                Customer
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Form.Group>
+        )}
         <Form.Group className="d-flex  justify-content-between">
           <span>
             {formText} <NavLink to={formLink}>{formTextAction}</NavLink>
           </span>
-          <Button
+          {isRegistration ? <Button
+            disabled={
+              email.length === 0 || password.length === 0 || roles.length === 0
+            }
             onClick={() => {
-              btnFunction(email, password);
+              console.log("role in click function");
+              console.log(roles);
+              btnFunction(email, password, roles);
             }}
           >
             {buttonText}
-          </Button>
+          </Button>: <Button
+            disabled={
+              email.length === 0 || password.length === 0
+            }
+            onClick={() => {
+              console.log("role in click function");
+              console.log(roles);
+              btnFunction(email, password, roles);
+            }}
+          >
+            {buttonText}
+          </Button> }
+          
         </Form.Group>
       </Form>
     </Container>

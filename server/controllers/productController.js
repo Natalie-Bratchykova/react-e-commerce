@@ -7,7 +7,11 @@ const { Op } = require("sequelize");
 class ProductController {
   async createProduct(req, res, next) {
     try {
-      const { name, price, typeId, brandId, info } = req.body;
+      const { name, price, typeId, brandId, info  } = req.body;
+   
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send("No files were uploaded.");
+      }
       const { image } = req.files;
 
       const fileName = crypto.randomUUID() + ".jpg";

@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 import * as Icon from "react-bootstrap-icons";
 import {
   ADMIN_ROUTE,
+  BASKET_ROUTE,
   LOGIN_ROUTE,
   REGISTRATION_ROUTE,
   SHOP_ROUTE,
@@ -41,14 +42,26 @@ function NavbarComponent(props) {
         </Form>
         {user.isAuth ? (
           <Nav className="ml-auto">
-            <Button variant={"outline-light"}>
-              <NavLink
-                style={{ color: "white", textDecoration: "none" }}
-                to={ADMIN_ROUTE}
-              >
-                Admin
-              </NavLink>
-            </Button>
+            {user.user.roles.includes("user") && (
+              <Button variant={"outline-light"}>
+                <NavLink
+                  style={{ color: "white", textDecoration: "none" }}
+                  to={BASKET_ROUTE}
+                >
+                  <Icon.Cart2/>
+                </NavLink>
+              </Button>
+            )}{" "}
+            {user.user.roles.includes("admin") && (
+              <Button variant={"outline-light"}>
+                <NavLink
+                  style={{ color: "white", textDecoration: "none" }}
+                  to={ADMIN_ROUTE}
+                >
+                  Admin
+                </NavLink>
+              </Button>
+            )}
             <Button
               variant={"outline-light"}
               className="ml-4"

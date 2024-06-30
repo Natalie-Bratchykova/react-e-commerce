@@ -12,7 +12,7 @@ const User = sequelize.define("user", {
     type: DataTypes.STRING,
     validate: { notEmpty: true, len: [5, 200] },
   },
-  roles: { type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: ["user"] },
+  roles: { type: DataTypes.ARRAY(DataTypes.STRING) },
 });
 
 const Basket = sequelize.define("basket", {

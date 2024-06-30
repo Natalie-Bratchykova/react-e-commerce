@@ -1,7 +1,6 @@
 // {path:"", element:""}
 
 import AdminPage from "./pages/AdminPage";
-import Auth from "./pages/Auth";
 import BasketPage from "./pages/BasketPage";
 import Login from "./pages/Login";
 import ProductPage from "./pages/ProductPage";
@@ -26,7 +25,5 @@ export const publicRoutes = [
 
 export const privateRoutes = [
   { path: BASKET_ROUTE, element: BasketPage },
-  { path: AUTH_ROUTE, element: Auth },
   { path: ADMIN_ROUTE, element: AdminPage },
 ];
-

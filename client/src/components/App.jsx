@@ -16,7 +16,7 @@ function App() {
     AuthService.checkAuth()
       .then((data) => {
         user.setIsAuth(true);
-        user.setUser(user);
+        user.setUser(data);
       })
       .finally(() => {
         setLoading(false);

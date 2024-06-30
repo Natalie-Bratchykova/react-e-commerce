@@ -55,8 +55,26 @@ class ProductService {
       requestUrl = requestUrl + title;
     }
     const { data } = await $axios.$host.get(requestUrl);
-    console.log(data.products);
     return data.products;
+  }
+
+  async createType(typeName) {
+    const { data } = await $axios.$authHost.post("/api/type/", {
+      name: typeName,
+    });
+    return data.type;
+  }
+
+  async createBrand(brandName) {
+    const { data } = await $axios.$authHost.post("/api/brand/", {
+      name: brandName,
+    });
+    return data.brand;
+  }
+
+  async createProduct(product) {
+    const { data } = await $axios.$authHost.post("/api/product", product);
+    return data.product;
   }
 }
 

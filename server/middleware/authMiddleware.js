@@ -6,6 +6,7 @@ module.exports = function (req, res, next) {
     console.log('\nTOKEN FROM HEADERS');
     console.log(token);
     if (!token) {
+      console.log('returned error');
       return res.status(401).json({ message: "User is not authorized (no token)" });
     }
     const decoded = jwt.decode(token, process.env.ACCESS_TOKEN_SECRET);

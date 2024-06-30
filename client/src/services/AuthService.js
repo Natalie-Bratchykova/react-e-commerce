@@ -1,11 +1,13 @@
 import { jwtDecode } from "jwt-decode";
 import { $axios } from "../http";
 class AuthService {
-  async registration(email, password, role = "user") {
+  async registration(email, password, roles) {
+    console.log('pass role for registration step2 ');
+    console.log(roles);
     const resp = await $axios.$host.post(`/api/user/registration`, {
       email,
       password,
-      role,
+      roles,
     });
 
     localStorage.setItem("token", resp.data.token);
