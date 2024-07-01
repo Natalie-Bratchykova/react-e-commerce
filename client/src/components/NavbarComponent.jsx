@@ -22,7 +22,7 @@ function NavbarComponent(props) {
   useEffect(() => {
     if (user.user && user.user.id) {
       BasketService.getUserBasket(user.user.id).then((data) => {
-        console.log(data);
+        // console.log(data);
         userBasket.setBasketProductNum(data.length);
       });
     }

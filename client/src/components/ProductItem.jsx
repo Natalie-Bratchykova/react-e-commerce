@@ -19,7 +19,7 @@ function ProductItem({ productInfo }) {
             minHeight: "18rem",
             maxHeight: "18rem",
           }}
-          className="d-flex align-items-center justify-content-center"
+          className="d-flex align-items-center justify-content-center p-1"
         >
           <Image
             height={"fit-content"}

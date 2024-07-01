@@ -11,9 +11,16 @@ class ProductService {
     return data.brands;
   }
 
-  async getAllProducts() {
-    const { data } = await $axios.$host.get("/api/product");
+  async getAllProducts(page) {
+    const { data } = await $axios.$host.get("/api/product/?page=" + page);
     return data.products.rows;
+  }
+
+  async getAllProductsAndPages(page, limit) {
+    const { data } = await $axios.$host.get(
+      "/api/product/?page=" + page + "&limit=" + limit
+    );
+    return { products: data.products.rows, pages: data.products.count };
   }
 
   async getAllProductsWithFilters(typeId, brandId) {
@@ -84,8 +91,8 @@ class ProductService {
     return data.productInfo;
   }
 
-  async deleteProduct(productId){
-    await $axios.$authHost.post('/api/product/delete', {productId})
+  async deleteProduct(productId) {
+    await $axios.$authHost.post("/api/product/delete", { productId });
   }
 }
 

@@ -48,6 +48,7 @@ class ProductController {
     try {
       let { typeId, brandId, page, limit } = req.query;
       page = page || 1;
+      console.log("page  = " + page);
       limit = limit || 3;
       let offset = page * limit - limit;
       let products;
