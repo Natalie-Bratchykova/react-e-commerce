@@ -70,7 +70,7 @@ export default class ProductStore {
     return this._searchProductName;
   }
   get modalMessage() {
-    this._modalMessage;
+    return this._modalMessage;
   }
 
   getBrandById(id) {

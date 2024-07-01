@@ -10,6 +10,7 @@ function ProductsList(props) {
   useEffect(() => {
     ProductService.getAllProducts().then((data) => {
       product.setProducts(data);
+      console.log(data);
     });
   }, []);
   return (

@@ -10,16 +10,9 @@ function NewBrandModal({ show, hide }) {
   const createBrand = (brandName) => {
     ProductService.createBrand(brandName).then((data) => {
       product.setAddedSuccessfully(Boolean(data));
-      product.setModalMessage(
-        `Brand ${brandName} was ${
-          product.addedSuccessfully && "not"
-        } added successfully`
-      );
-      console.log("process adding");
-      console.log(product.addedSuccessfully);
-      console.log(product.modalMessage);
-      console.log(data);
-
+      product.setModalMessage(`${brandName} ${
+          product.addedSuccessfully ? "was" : "wasn't"
+        } added successfully`);
       setBrandName("");
     });
 

@@ -10,8 +10,8 @@ function NewTypeModal({ show, hide }) {
     ProductService.createType(typeName).then((data) => {
       product.setAddedSuccessfully(Boolean(data));
       product.setModalMessage(
-        `Brand ${typeName} was ${
-          product.addedSuccessfully && "not"
+        `Type ${typeName} was ${
+          !product.addedSuccessfully && "not"
         } added successfully`
       );
       console.log("process adding");

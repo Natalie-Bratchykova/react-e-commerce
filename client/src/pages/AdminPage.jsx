@@ -7,7 +7,7 @@ import { Context } from "../main";
 import SuccessModal from "../components/modals/SuccessModal";
 import NewProductModal from "../components/modals/NewProductModal";
 
-function AdminPage(props) {
+function AdminPage() {
   const { product, user } = useContext(Context);
   const [showNewTypeModal, setShowNewTypeModal] = useState(false);
   const hideTypeModal = () => setShowNewTypeModal(false);
@@ -24,8 +24,16 @@ function AdminPage(props) {
 
   return (
     <Container>
+      <Row
+        className="d-flex justify-content-center my-5"
+        style={{
+          fontSize: "2rem",
+        }}
+      >
+        Hi, {user.user.email}!
+      </Row>
       <Row>
-        <Col className="d-flex flex-column justify-content-center align-items-center">
+        <Col className="d-flex justify-content-center gap-3">
           <Button className="mt-2" onClick={() => setShowNewTypeModal(true)}>
             Add new Type
           </Button>
@@ -40,7 +48,11 @@ function AdminPage(props) {
       <NewTypeModal show={showNewTypeModal} hide={hideTypeModal} />
       <NewBrandModal show={showNewBrandModal} hide={hideBrandModal} />
       <NewProductModal show={showNewProductModal} hide={hideProductModal} />
-      <SuccessModal show={product.addedSuccessfully} hide={hideSuccessModal} />
+      <SuccessModal
+        show={product.addedSuccessfully}
+        hide={hideSuccessModal}
+        message={product.modalMessage}
+      />
     </Container>
   );
 }

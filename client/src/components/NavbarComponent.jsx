@@ -1,6 +1,7 @@
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
+import BasketService from "../services/BasketService";
 import { Button, Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import * as Icon from "react-bootstrap-icons";
@@ -11,13 +12,21 @@ import {
   REGISTRATION_ROUTE,
   SHOP_ROUTE,
 } from "../utils/const";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "../main";
 import { observer } from "mobx-react-lite";
 
 function NavbarComponent(props) {
-  const { user, product } = useContext(Context);
+  const { user, product, userBasket } = useContext(Context);
   const [searchText, setSearchText] = useState("");
+  useEffect(() => {
+    if (user.user && user.user.id) {
+      BasketService.getUserBasket(user.user.id).then((data) => {
+        console.log(data);
+        userBasket.setBasketProductNum(data.length);
+      });
+    }
+  });
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>
@@ -27,7 +36,7 @@ function NavbarComponent(props) {
         >
           Shopingfy
         </NavLink>
-        <Form>
+        <Form className="d-none d-md-block">
           <Form.Group className="d-flex justify-content-between">
             <Form.Control
               value={searchText}
@@ -43,17 +52,41 @@ function NavbarComponent(props) {
         {user.isAuth ? (
           <Nav className="ml-auto">
             {user.user.roles.includes("user") && (
-              <Button variant={"outline-light"}>
+              <Button
+                style={{
+                  background: "transparent",
+                  color: "white",
+                  borderColor: "transparent",
+                }}
+              >
                 <NavLink
                   style={{ color: "white", textDecoration: "none" }}
+                  className="d-flex align-items-center"
                   to={BASKET_ROUTE}
                 >
-                  <Icon.Cart2/>
+                  <Icon.Cart2 className="mr-5" />
+
+                  {userBasket.basketProductNum > 0 && (
+                    <span
+                      style={{
+                        color: "red",
+                        padding: ".3rem",
+                      }}
+                    >
+                      {userBasket.basketProductNum}
+                    </span>
+                  )}
                 </NavLink>
               </Button>
             )}{" "}
             {user.user.roles.includes("admin") && (
-              <Button variant={"outline-light"}>
+              <Button
+                style={{
+                  background: "transparent",
+                  color: "white",
+                  borderColor: "transparent",
+                }}
+              >
                 <NavLink
                   style={{ color: "white", textDecoration: "none" }}
                   to={ADMIN_ROUTE}
@@ -63,8 +96,12 @@ function NavbarComponent(props) {
               </Button>
             )}
             <Button
-              variant={"outline-light"}
-              className="ml-4"
+              style={{
+                background: "transparent",
+                color: "white",
+                borderColor: "transparent",
+                marginLeft: "1rem",
+              }}
               onClick={(e) => {
                 user.logout();
               }}

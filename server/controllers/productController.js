@@ -7,8 +7,8 @@ const { Op } = require("sequelize");
 class ProductController {
   async createProduct(req, res, next) {
     try {
-      const { name, price, typeId, brandId, info  } = req.body;
-   
+      const { name, price, typeId, brandId, info } = req.body;
+
       if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send("No files were uploaded.");
       }
@@ -28,14 +28,14 @@ class ProductController {
 
       if (info) {
         const infoArray = JSON.parse(info);
-        infoArray.map(
-          async (info) =>
-            await ProductInfo.create({
-              title: info.title,
-              description: info.description,
-              productId: info.productId,
-            })
-        );
+        infoArray.map(async (info) => {
+          console.log(info);
+          return await ProductInfo.create({
+            title: info.title,
+            description: info.description,
+            productId: product.id,
+          });
+        });
       }
 
       return res.json({ product });
@@ -107,6 +107,28 @@ class ProductController {
       });
 
       return res.json({ products });
+    } catch (error) {
+      return res.json(error);
+    }
+  }
+
+  async getProductInfo(req, res, next) {
+    try {
+      const { id } = req.params;
+      const productInfo = await ProductInfo.findAll({
+        where: { productId: id },
+      });
+      return res.json({ productInfo });
+    } catch (error) {
+      return res.json(error);
+    }
+  }
+
+  async deleteProduct(req, res, next) {
+    try {
+      const { productId } = req.body;
+      const deletedProd = await Product.destroy({ where: { id: productId } });
+      return res.json({ message: "deleted " });
     } catch (error) {
       return res.json(error);
     }

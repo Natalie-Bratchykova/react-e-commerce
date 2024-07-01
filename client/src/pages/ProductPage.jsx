@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Card,
   Col,
@@ -9,13 +9,18 @@ import {
   Accordion,
 } from "react-bootstrap";
 import { Context } from "../main";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import ProductService from "../services/ProductService";
 import { cutLastChar } from "../utils/helpers";
+import BasketService from "../services/BasketService";
+import { Trash } from "react-bootstrap-icons";
+import { SHOP_ROUTE } from "../utils/const";
 function ProductPage(props) {
-  const { product } = useContext(Context);
+  const { product, user, userBasket } = useContext(Context);
   const location = useLocation();
+  const [info, setInfo] = useState([]);
+  const navigateTo = useNavigate();
 
   useEffect(() => {
     const id = location.pathname.split("/").at(-1);
@@ -28,14 +33,31 @@ function ProductPage(props) {
       ProductService.getBrandById(data.brandId).then((brandData) => {
         product.setSelectedBrand(brandData);
       });
+
+      ProductService.getProductInfo(id).then((data) => {
+        setInfo(data);
+      });
     });
 
+    console.log("product info");
     console.log(product.product);
   }, [location]);
 
+  const handleAddToBasket = (userId, productId) => {
+    BasketService.addToBasket(userId, productId).then(() => {
+      BasketService.getUserBasket(user.user.id).then((data) => {
+        console.log(data);
+        userBasket.setBasketProductNum(data.length);
+      });
+    });
+  };
+
+  const handleDelete = (productId) => {
+    ProductService.deleteProduct(productId);
+    navigateTo(SHOP_ROUTE);
+  };
   return (
     <Container
-      // className="d-flex align-items-center justify-content-center"
       style={{
         width: "100vh",
       }}
@@ -63,15 +85,40 @@ function ProductPage(props) {
               <Card.Title>Price:{product.product.price} hrn</Card.Title>
               <Card.Footer className="mt-2">
                 <Card.Title>Description</Card.Title>
-                <Card.Text>Description will be here</Card.Text>
-                <Row>
-                  <Col>
-                    <Button variant="outline-primary">Add to wish list</Button>
-                  </Col>
-                  <Col>
-                    <Button>Add to basket</Button>
-                  </Col>
-                </Row>
+                {info.map((inf) => (
+                  <Card.Text key={inf.id}>
+                    {inf.title}: {inf.description}
+                  </Card.Text>
+                ))}
+
+                {user.isAuth && user.user.roles.includes("user") && (
+                  <Row>
+                    <Col>
+                      <Button variant="outline-primary">
+                        Add to wish list
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Button
+                        onClick={() => {
+                          handleAddToBasket(user.user.id, product.product.id);
+                        }}
+                      >
+                        Add to basket
+                      </Button>
+                    </Col>
+                  </Row>
+                )}
+                {user.isAuth && user.user.roles.includes("admin") && (
+                  <Row>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(product.product.id)}
+                    >
+                      <Trash />
+                    </Button>
+                  </Row>
+                )}
               </Card.Footer>
             </Card.Body>
           </Card>

@@ -61,6 +61,10 @@ function NewProductModal({ show, hide }) {
     formData.append("typeId", typeId);
     formData.append("info", JSON.stringify(info));
     ProductService.createProduct(formData).then((data) => {
+      product.setAddedSuccessfully(Boolean(data));
+      product.setModalMessage(`${productName} ${
+          product.addedSuccessfully ? "was" : "wasn't"
+        } added successfully`);
       hide();
     });
   };

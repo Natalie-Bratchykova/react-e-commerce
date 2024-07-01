@@ -14,10 +14,14 @@ class TypeController {
   }
 
   async getTypeById(req, res) {
-    const { id } = req.params;
-    console.log(req.params);
-    const type = await Type.findOne({ where: { id } });
-    return res.json({ type });
+    try {
+      const { id } = req.params;
+      console.log(req.params);
+      const type = await Type.findOne({ where: { id } });
+      return res.json({ type });
+    } catch (error) {
+      res.json(error);
+    }
   }
 }
 

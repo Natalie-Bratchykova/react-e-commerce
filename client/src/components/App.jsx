@@ -25,7 +25,9 @@ function App() {
 
   useEffect(() => {
     ProductService.getProductsByName(product.searchProductName).then((data) => {
-      product.setProducts(data);
+      if (Array.isArray(data)) {
+        product.setProducts(data);
+      }
     });
   }, [product.searchProductName]);
   if (loading) {

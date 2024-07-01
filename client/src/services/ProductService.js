@@ -53,9 +53,11 @@ class ProductService {
     let requestUrl = "/api/product/name/";
     if (title) {
       requestUrl = requestUrl + title;
+      const { data } = await $axios.$host.get(requestUrl);
+      return data.products;
+    } else {
+      return "No access";
     }
-    const { data } = await $axios.$host.get(requestUrl);
-    return data.products;
   }
 
   async createType(typeName) {
@@ -75,6 +77,15 @@ class ProductService {
   async createProduct(product) {
     const { data } = await $axios.$authHost.post("/api/product", product);
     return data.product;
+  }
+
+  async getProductInfo(id) {
+    const { data } = await $axios.$host.get("/api/product/info/" + id);
+    return data.productInfo;
+  }
+
+  async deleteProduct(productId){
+    await $axios.$authHost.post('/api/product/delete', {productId})
   }
 }
 
