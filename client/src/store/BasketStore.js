@@ -3,11 +3,18 @@ import { makeAutoObservable } from "mobx";
 class BasketStore {
   constructor() {
     this._basket = [];
+    this._basketProduct = {};
     this._basketProducts = [];
     this._basketProductNum = 0;
     makeAutoObservable(this);
   }
 
+  setBasketProduct(product) {
+    this._basketProduct = product;
+  }
+  get basketProduct() {
+    return this._basketProduct;
+  }
   setBasket(basket) {
     this._basket = basket;
   }

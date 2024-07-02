@@ -1,27 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../main";
 import ProductService from "../services/ProductService";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 import ProductItem from "./ProductItem";
 import { observer } from "mobx-react-lite";
 import { ChevronDoubleLeft, ChevronDoubleRight } from "react-bootstrap-icons";
-
-function ProductsList(props) {
-  const { product } = useContext(Context);
+import { PAGE_LIMIT } from "../utils/const";
+import BasketService from "../services/BasketService";
+function ProductsList() {
+  const { product, user, userBasket } = useContext(Context);
   const [currentPage, setPage] = useState(1);
   const [isLastPage, setIsLastPage] = useState(false);
-  const PAGE_LIMIT = 3;
-  useEffect(() => {
-    ProductService.getAllProductsAndPages(currentPage, PAGE_LIMIT).then(
-      (data) => {
-        product.setProducts(data.products);
 
-        if (currentPage === Math.ceil(data.pages / PAGE_LIMIT)) {
-          setIsLastPage(true);
-        }
-        console.log(data);
+  useEffect(() => {
+    BasketService.getUserBasket(user.user.id).then((data) => {
+      userBasket.setBasket(data);
+    });
+
+    ProductService.getAllProductsAndPages(currentPage).then((data) => {
+      product.setProducts(data.products);
+      product.setIsPagination(data.pages > PAGE_LIMIT);
+      console.log(`Can we display pages? ${product.isPagination}`);
+      if (currentPage === Math.ceil(data.pages / PAGE_LIMIT)) {
+        setIsLastPage(true);
+      } else {
+        setIsLastPage(false);
       }
-    );
+    });
   }, [currentPage]);
 
   const handleIncreasePages = () => {
@@ -32,11 +37,15 @@ function ProductsList(props) {
     setPage(currentPage - 1);
   };
   return (
-    <Row className="mt-2">
+    <Row className="my-2 d-flex">
       {product.products.map((product) => (
         <ProductItem key={product.id} productInfo={product} />
       ))}
-      <Row className="d-flex justify-content-center mt-5">
+      <Row
+        className={`d-flex justify-content-center mt-1 align-items-center ${
+          !product.isPagination && "d-none"
+        }`}
+      >
         <Col
           onClick={handleDecreasePage}
           md={1}
@@ -47,7 +56,9 @@ function ProductsList(props) {
           {" "}
           {currentPage > 1 && <ChevronDoubleLeft />}
         </Col>
-        <Col md={1}>{currentPage}</Col>
+        <Col md={1}>
+          <Button variant="outline-dark">{currentPage}</Button>
+        </Col>
         <Col
           md={1}
           style={{

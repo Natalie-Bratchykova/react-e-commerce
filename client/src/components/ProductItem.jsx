@@ -5,24 +5,25 @@ import { Context } from "../main";
 import { useNavigate } from "react-router-dom";
 import { PRODUCT_PAGE_ROUTE } from "../utils/const";
 import { cutLastChar } from "../utils/helpers";
+import AddToBasketButton from "./AddToBasketButton";
 
-function ProductItem({ productInfo }) {
+function ProductItem({
+  productInfo
+}) {
   const { product } = useContext(Context);
   const navigateTo = useNavigate();
+
   return (
-    <Col>
-      <Card style={{ width: "18rem" }}>
-        <Row
-          style={{
-            minWidth: "15rem",
-            maxWidth: "15rem",
-            minHeight: "18rem",
-            maxHeight: "18rem",
-          }}
-          className="d-flex align-items-center justify-content-center p-1"
-        >
+    <Col className="mt-2 mb-1">
+      <Card style={{ width: "18rem", height: "18rem" }}>
+        <Row className="d-flex align-items-center justify-content-center p-1">
           <Image
-            height={"fit-content"}
+            style={{
+              minHeight: "7rem",
+              maxHeight: "7rem",
+              width: "fit-content",
+            }}
+            width={"fit-content"}
             src={`${import.meta.env.VITE_BASE_URL}/${productInfo.image}`}
           />
         </Row>
@@ -45,6 +46,9 @@ function ProductItem({ productInfo }) {
           >
             See more
           </Button>
+          <AddToBasketButton
+            productInfo={productInfo}
+          />
         </Card.Body>
       </Card>
     </Col>

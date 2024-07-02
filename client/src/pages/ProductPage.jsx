@@ -1,31 +1,32 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Card,
-  Col,
-  Container,
-  Row,
-  Button,
-  Image,
-  Accordion,
-} from "react-bootstrap";
+import { Card, Col, Container, Row, Button, Image } from "react-bootstrap";
 import { Context } from "../main";
 import { useLocation, useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import ProductService from "../services/ProductService";
 import { cutLastChar } from "../utils/helpers";
 import BasketService from "../services/BasketService";
-import { Trash } from "react-bootstrap-icons";
+import { Basket, Pencil, Star, Trash } from "react-bootstrap-icons";
 import { SHOP_ROUTE } from "../utils/const";
-function ProductPage(props) {
+import EditProductModal from "../components/modals/EditProductModal";
+import AddToBasketButton from "../components/AddToBasketButton";
+function ProductPage() {
   const { product, user, userBasket } = useContext(Context);
   const location = useLocation();
   const [info, setInfo] = useState([]);
+  const [inBasket, setInBasket] = useState([]);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({});
   const navigateTo = useNavigate();
 
   useEffect(() => {
     const id = location.pathname.split("/").at(-1);
+    BasketService.getUserBasket(user.user.id).then((data) => {
+      userBasket.setBasket(data);
+    });
     ProductService.getProductById(id).then((data) => {
-      product.setProduct(data);
+      product.setProduct({ ...data, isInBasket: false });
+      setCurrentProduct(data);
       console.log(data);
       ProductService.getTypeById(data.typeId).then((typeData) => {
         product.setSelectedType(typeData);
@@ -38,24 +39,38 @@ function ProductPage(props) {
         setInfo(data);
       });
     });
-
-    console.log("product info");
-    console.log(product.product);
   }, [location]);
+
+  const checkProductInBasket = () => {
+    userBasket.basket.map((basket) => {
+      if (basket.productId === product.product.id) {
+        product.product.isInBasket = true;
+      }
+    });
+
+    return product.product;
+  };
 
   const handleAddToBasket = (userId, productId) => {
     BasketService.addToBasket(userId, productId).then(() => {
       BasketService.getUserBasket(user.user.id).then((data) => {
         console.log(data);
+        setInBasket(data);
         userBasket.setBasketProductNum(data.length);
       });
     });
+    product.product.isInBasket = true;
+    console.log("in basket");
+    console.log(inBasket);
   };
 
   const handleDelete = (productId) => {
     ProductService.deleteProduct(productId);
     navigateTo(SHOP_ROUTE);
   };
+
+  const handleOpenEdit = () => setOpenEdit(true);
+  const handleCloseEdit = () => setOpenEdit(false);
   return (
     <Container
       style={{
@@ -80,50 +95,80 @@ function ProductPage(props) {
                   product.product.name}
               </Card.Title>
             </Card.Header>
-            <Card.Body>
-              <Card.Subtitle>Rating: {product.product.rating}</Card.Subtitle>
+            <Card.Body className="d-flex justify-content-between">
               <Card.Title>Price:{product.product.price} hrn</Card.Title>
-              <Card.Footer className="mt-2">
-                <Card.Title>Description</Card.Title>
-                {info.map((inf) => (
-                  <Card.Text key={inf.id}>
-                    {inf.title}: {inf.description}
-                  </Card.Text>
-                ))}
+              <Card.Title className="d-flex align-items-center">
+                {product.product.rating + " "} <Star />
+              </Card.Title>
+            </Card.Body>
+            <Card.Footer className="mt-2">
+              <Card.Title>Description</Card.Title>
+              {info.map((inf) => (
+                <Card.Text key={inf.id}>
+                  {inf.title}: {inf.description}
+                </Card.Text>
+              ))}
 
-                {user.isAuth && user.user.roles.includes("user") && (
-                  <Row>
-                    <Col>
-                      <Button variant="outline-primary">
-                        Add to wish list
+              {user.isAuth && user.user.roles.includes("user") && (
+                <Row>
+                  <Col>
+                    <Button variant="outline-success">Add to wish list</Button>
+                  </Col>
+                  <Col>
+                    {checkProductInBasket().isInBasket ? (
+                      <Button variant="outline-success">
+                        In basket <Basket />
                       </Button>
-                    </Col>
-                    <Col>
+                    ) : (
                       <Button
+                        variant="success"
                         onClick={() => {
                           handleAddToBasket(user.user.id, product.product.id);
                         }}
                       >
                         Add to basket
                       </Button>
-                    </Col>
-                  </Row>
-                )}
-                {user.isAuth && user.user.roles.includes("admin") && (
-                  <Row>
+                    )}
+                  </Col>
+                </Row>
+              )}
+              {user.isAuth && user.user.roles.includes("admin") && (
+                <Row className="d-flex justify-content-between">
+                  <Col>
                     <Button
+                      onClick={() => {
+                        handleOpenEdit();
+                      }}
+                      style={{
+                        width: "100%",
+                      }}
+                      variant="success"
+                    >
+                      <Pencil />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button
+                      style={{
+                        width: "100%",
+                      }}
                       variant="danger"
                       onClick={() => handleDelete(product.product.id)}
                     >
                       <Trash />
                     </Button>
-                  </Row>
-                )}
-              </Card.Footer>
-            </Card.Body>
+                  </Col>
+                </Row>
+              )}
+            </Card.Footer>
           </Card>
         </Col>
       </Row>
+      <EditProductModal
+        show={openEdit}
+        hide={handleCloseEdit}
+        currentProduct={currentProduct}
+      />
     </Container>
   );
 }

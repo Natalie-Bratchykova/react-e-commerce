@@ -1,9 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../main";
-import ProductService from "../services/ProductService";
+
 import { Card, Row } from "react-bootstrap";
 import { observer } from "mobx-react-lite";
-import { useLocation } from "react-router-dom";
 
 function BrandBar(props) {
   const { product } = useContext(Context);
@@ -18,7 +17,8 @@ function BrandBar(props) {
           border={brand.id === product.selectedBrand.id ? "danger" : ""}
           onClick={() => {
             product.setSelectedBrand(brand);
-            console.log('brand is selected')
+            console.log("brand is selected");
+            console.log(brand.id);
             console.log(product.selectedBrand);
           }}
         >

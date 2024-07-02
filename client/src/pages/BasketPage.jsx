@@ -1,7 +1,15 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import BasketService from "../services/BasketService";
 import { Context } from "../main";
-import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Image,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 import { observer } from "mobx-react-lite";
 import ProductService from "../services/ProductService";
 import { cutLastChar } from "../utils/helpers";
@@ -10,21 +18,27 @@ import * as Icon from "react-bootstrap-icons";
 function BasketPage() {
   const { user, userBasket, product } = useContext(Context);
   const [isClicked, setClicked] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const getBasketInfo = () => {
-    ProductService.getAllBrands().then((data) => product.setBrands(data));
+    setLoading(true);
+    try {
+      ProductService.getAllBrands().then((data) => product.setBrands(data));
+      ProductService.getAllTypes().then((data) => product.setTypes(data));
+      BasketService.getUserBasket(user.user.id).then((baskets) => {
+        userBasket.setBasket(baskets);
+        userBasket.setBasketProductNum(userBasket.basket.length);
 
-    ProductService.getAllTypes().then((data) => product.setTypes(data));
-
-    BasketService.getUserBasket(user.user.id).then((baskets) => {
-      userBasket.setBasket(baskets);
-      userBasket.setBasketProductNum(userBasket.basket.length);
-
-      // get prods
-      ProductService.getAllProducts().then((data) => {
-        product.setProducts(data);
+        // get prods
+        ProductService.getAllProducts().then((data) => {
+          product.setProducts(data);
+        });
       });
-    });
-    setClicked(false);
+      setClicked(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -33,6 +47,7 @@ function BasketPage() {
 
   const getProducts = () => {
     let prods = [];
+
     userBasket.basket.map((basket) => {
       product.products.map((product) => {
         if (basket.productId === product.id) {
@@ -42,6 +57,7 @@ function BasketPage() {
     });
 
     console.log(prods);
+
     return prods;
   };
 
@@ -51,7 +67,9 @@ function BasketPage() {
 
     setClicked(true);
   };
-
+  if (isLoading) {
+    return <Spinner />;
+  }
   return (
     <Container>
       <div>

@@ -8,10 +8,18 @@ export default class ProductStore {
     this._product = {};
     this._selectedType = {};
     this._selectedBrand = {};
+    this._isPagination = false;
     this._searchProductName = "";
     this._addedSuccessfully = false;
     this._modalMessage = "";
     makeAutoObservable(this);
+  }
+
+  setIsPagination(bool) {
+    this._isPagination = bool;
+  }
+  get isPagination() {
+    return this._isPagination;
   }
 
   setTypes(array) {
@@ -35,6 +43,7 @@ export default class ProductStore {
   setProduct(product) {
     this._product = product;
   }
+
   setSearchProductName(title) {
     this._searchProductName = title;
   }
@@ -108,6 +117,4 @@ export default class ProductStore {
   addProduct(product) {
     this._products.push(product);
   }
-
-  
 }

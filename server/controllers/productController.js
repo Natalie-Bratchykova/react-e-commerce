@@ -44,22 +44,30 @@ class ProductController {
     }
   }
 
+  async getAllProducts(req, res, next) {
+    try {
+      const products = await Product.findAll();
+      return res.json({ products });
+    } catch (error) {
+      return res.json(error);
+    }
+  }
+
   async getProducts(req, res) {
     try {
+      console.log(req.baseUrl);
       let { typeId, brandId, page, limit } = req.query;
       page = page || 1;
-      console.log("page  = " + page);
       limit = limit || 3;
+
       let offset = page * limit - limit;
       let products;
 
       if (!typeId && !brandId) {
-        console.log("cond 1");
         products = await Product.findAndCountAll({ limit, offset });
       }
 
       if (!brandId && typeId) {
-        console.log("cond 2");
         products = await Product.findAndCountAll({
           where: { typeId },
           limit,
@@ -68,16 +76,17 @@ class ProductController {
       }
 
       if (!typeId && brandId) {
-        console.log("cond 3");
-        products = await Product.findAndCountAll({
-          where: { brandId },
-          limit,
-          offset,
-        });
+        console.log(`brand id = ${brandId}`);
+        if (Number(brandId)) {
+          products = await Product.findAndCountAll({
+            where: { brandId },
+            limit,
+            offset,
+          });
+        }
       }
 
       if (typeId && brandId) {
-        console.log("cond 4");
         products = await Product.findAndCountAll({
           where: { typeId, brandId },
           limit,

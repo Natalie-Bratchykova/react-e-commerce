@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { Spinner } from "react-bootstrap";
 import AuthService from "../services/AuthService";
 import ProductService from "../services/ProductService";
+import { PAGE_LIMIT } from "../utils/const";
 
 function App() {
   const { user, product } = useContext(Context);
@@ -27,6 +28,7 @@ function App() {
     ProductService.getProductsByName(product.searchProductName).then((data) => {
       if (Array.isArray(data)) {
         product.setProducts(data);
+        product.setIsPagination(data.length > PAGE_LIMIT);
       }
     });
   }, [product.searchProductName]);

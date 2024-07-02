@@ -6,3 +6,5 @@ export const ADMIN_ROUTE = "/admin";
 export const BASKET_ROUTE = "/basket";
 export const PRODUCT_PAGE_ROUTE = "/product_page";
 export const ROLES = { user: "user", admin: "admin" };
+
+export const PAGE_LIMIT = 6;

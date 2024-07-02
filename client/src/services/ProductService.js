@@ -1,4 +1,5 @@
 import { $axios } from "../http";
+import { PAGE_LIMIT } from "../utils/const";
 
 class ProductService {
   async getAllTypes() {
@@ -11,34 +12,47 @@ class ProductService {
     return data.brands;
   }
 
-  async getAllProducts(page) {
-    const { data } = await $axios.$host.get("/api/product/?page=" + page);
+  async getProducts(limit = PAGE_LIMIT, page = 1) {
+    const { data } = await $axios.$host.get(
+      `/api/product/?limit=${limit}&page=${page}`
+    );
     return data.products.rows;
   }
 
-  async getAllProductsAndPages(page, limit) {
+  async getAllProducts() {
+    const { data } = await $axios.$host.get("/api/product/all");
+    return data.products;
+  }
+
+  async getAllProductsAndPages(page, limit = PAGE_LIMIT) {
     const { data } = await $axios.$host.get(
-      "/api/product/?page=" + page + "&limit=" + limit
+      `/api/product/?page=${page}&limit=${limit}`
     );
     return { products: data.products.rows, pages: data.products.count };
   }
 
-  async getAllProductsWithFilters(typeId, brandId) {
-    let requestUrl = "/api/product/";
+  async getAllProductsWithFilters(
+    typeId,
+    brandId,
+    limit = PAGE_LIMIT,
+    page = 1
+  ) {
+    let requestUrl = `/api/product/?limit=${limit}&page=${page}`;
+
     if (!typeId && !brandId) {
       requestUrl = requestUrl;
     }
     if (!typeId && brandId) {
-      requestUrl = requestUrl + `?brandId=${brandId}`;
+      requestUrl = requestUrl + `&brandId=${brandId}`;
     }
     if (!brandId && typeId) {
-      requestUrl = requestUrl + "?typeId=" + typeId;
+      requestUrl = requestUrl + "&typeId=" + typeId;
     }
     if (typeId && brandId) {
-      requestUrl = requestUrl + `?typeId=${typeId}&brandId=${brandId}`;
+      requestUrl = requestUrl + `&typeId=${typeId}&brandId=${brandId}`;
     }
     const { data } = await $axios.$host.get(requestUrl);
-    return data.products.rows;
+    return { count: data.products.count, products: data.products.rows };
   }
 
   async getProductById(id) {

@@ -16,17 +16,16 @@ import { useContext, useEffect, useState } from "react";
 import { Context } from "../main";
 import { observer } from "mobx-react-lite";
 
-function NavbarComponent(props) {
+function NavbarComponent() {
   const { user, product, userBasket } = useContext(Context);
   const [searchText, setSearchText] = useState("");
   useEffect(() => {
     if (user.user && user.user.id) {
       BasketService.getUserBasket(user.user.id).then((data) => {
-        // console.log(data);
         userBasket.setBasketProductNum(data.length);
       });
     }
-  });
+  }, []);
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>
