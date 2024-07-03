@@ -13,9 +13,11 @@ function ProductsList() {
   const [isLastPage, setIsLastPage] = useState(false);
 
   useEffect(() => {
-    BasketService.getUserBasket(user.user.id).then((data) => {
-      userBasket.setBasket(data);
-    });
+    if (user.isAuth && user.user) {
+      BasketService.getUserBasket(user.user.id).then((data) => {
+        userBasket.setBasket(data);
+      });
+    }
 
     ProductService.getAllProductsAndPages(currentPage).then((data) => {
       product.setProducts(data.products);

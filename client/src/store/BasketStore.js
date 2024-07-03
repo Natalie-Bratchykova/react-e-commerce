@@ -5,8 +5,19 @@ class BasketStore {
     this._basket = [];
     this._basketProduct = {};
     this._basketProducts = [];
+    this._allBaskets = [];
+    this._allProductsInAllBaskets = [];
     this._basketProductNum = 0;
     makeAutoObservable(this);
+  }
+  setAllBaskets(array) {
+    this._allBaskets = array;
+  }
+  pushItemToAllBaskets(item) {
+    this._allBaskets.push(item);
+  }
+  get allBaskets() {
+    return this._allBaskets;
   }
 
   setBasketProduct(product) {
@@ -40,6 +51,13 @@ class BasketStore {
 
   get basketProductNum() {
     return this._basketProductNum;
+  }
+
+  pushItemToAllProductsInAllBaskets(item) {
+    this._allProductsInAllBaskets.push(item);
+  }
+  get allProductsInAllBaskets() {
+    return this._allProductsInAllBaskets;
   }
 }
 

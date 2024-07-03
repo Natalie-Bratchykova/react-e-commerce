@@ -2,6 +2,7 @@ const { Basket, BasketProduct } = require("../models/models");
 
 class BasketController {
   async getBasket(req, res, next) {
+    console.log(`GET 1 BASKET METHOD IN WORK`);
     try {
       const { userId } = req.params;
       const userBasket = await Basket.findOne({ where: { userId: userId } });
@@ -10,6 +11,19 @@ class BasketController {
       });
       return res.json({ userBasketProducts });
     } catch (error) {
+      return res.json(error);
+    }
+  }
+
+  async getAllBaskets(req, res, next) {
+    console.log(`GET ALL BASKETS METHOD IN WORK`);
+    try {
+      const baskets = await Basket.findAll();
+      console.log(`------------ BASKETS---------------`);
+      console.log(baskets);
+      return res.json({ baskets });
+    } catch (error) {
+      console.log(`------------ ERROR---------------`);
       return res.json(error);
     }
   }
@@ -37,7 +51,7 @@ class BasketController {
       const deleteRow = await BasketProduct.destroy({
         where: { id: basketProductId },
       });
-      console.log('deleted row');
+      console.log("deleted row");
       console.log(deleteRow);
       return res.json(deleteRow);
     } catch (error) {

@@ -25,7 +25,9 @@ function FormComponent({
       setErrorMessage("");
     } catch (error) {
       console.log(error);
-      setErrorMessage(error.response.data.message);
+      setErrorMessage(
+        error.response.data ? error.response.data.message : "TypeError"
+      );
     }
   };
   const [email, setEmail] = useState("");
@@ -79,30 +81,33 @@ function FormComponent({
           <span>
             {formText} <NavLink to={formLink}>{formTextAction}</NavLink>
           </span>
-          {isRegistration ? <Button
-            disabled={
-              email.length === 0 || password.length === 0 || roles.length === 0
-            }
-            onClick={() => {
-              console.log("role in click function");
-              console.log(roles);
-              btnFunction(email, password, roles);
-            }}
-          >
-            {buttonText}
-          </Button>: <Button
-            disabled={
-              email.length === 0 || password.length === 0
-            }
-            onClick={() => {
-              console.log("role in click function");
-              console.log(roles);
-              btnFunction(email, password, roles);
-            }}
-          >
-            {buttonText}
-          </Button> }
-          
+          {isRegistration ? (
+            <Button
+              disabled={
+                email.length === 0 ||
+                password.length === 0 ||
+                roles.length === 0
+              }
+              onClick={() => {
+                console.log("role in click function");
+                console.log(roles);
+                btnFunction(email, password, roles);
+              }}
+            >
+              {buttonText}
+            </Button>
+          ) : (
+            <Button
+              disabled={email.length === 0 || password.length === 0}
+              onClick={() => {
+                console.log("role in click function");
+                console.log(roles);
+                btnFunction(email, password, roles);
+              }}
+            >
+              {buttonText}
+            </Button>
+          )}
         </Form.Group>
       </Form>
     </Container>

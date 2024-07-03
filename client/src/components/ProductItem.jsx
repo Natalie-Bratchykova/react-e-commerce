@@ -7,10 +7,8 @@ import { PRODUCT_PAGE_ROUTE } from "../utils/const";
 import { cutLastChar } from "../utils/helpers";
 import AddToBasketButton from "./AddToBasketButton";
 
-function ProductItem({
-  productInfo
-}) {
-  const { product } = useContext(Context);
+function ProductItem({ productInfo }) {
+  const { product, user } = useContext(Context);
   const navigateTo = useNavigate();
 
   return (
@@ -46,9 +44,9 @@ function ProductItem({
           >
             See more
           </Button>
-          <AddToBasketButton
-            productInfo={productInfo}
-          />
+          {user.isAuth && user.user.roles.includes("user") && (
+            <AddToBasketButton productInfo={productInfo} />
+          )}
         </Card.Body>
       </Card>
     </Col>

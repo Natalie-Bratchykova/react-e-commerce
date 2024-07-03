@@ -20,12 +20,13 @@ function NavbarComponent() {
   const { user, product, userBasket } = useContext(Context);
   const [searchText, setSearchText] = useState("");
   useEffect(() => {
-    if (user.user && user.user.id) {
+    if (user.user && user.user.id && user.user.roles.includes("user")) {
       BasketService.getUserBasket(user.user.id).then((data) => {
         userBasket.setBasketProductNum(data.length);
       });
     }
-  }, []);
+  }, [user.isAuth]);
+
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>
@@ -48,9 +49,10 @@ function NavbarComponent() {
             </Button>
           </Form.Group>
         </Form>
+
         {user.isAuth ? (
           <Nav className="ml-auto">
-            {user.user.roles.includes("user") && (
+            {user.user && user.user.roles.includes("user") && (
               <Button
                 style={{
                   background: "transparent",
@@ -78,7 +80,7 @@ function NavbarComponent() {
                 </NavLink>
               </Button>
             )}{" "}
-            {user.user.roles.includes("admin") && (
+            {user.user && user.user.roles.includes("admin") && (
               <Button
                 style={{
                   background: "transparent",

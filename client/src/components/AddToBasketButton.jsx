@@ -4,20 +4,25 @@ import { Context } from "../main";
 import { observer } from "mobx-react-lite";
 import BasketService from "../services/BasketService";
 import { Basket } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
+import { BASKET_ROUTE } from "../utils/const";
 
 function AddToBasketButton({ productInfo }) {
   const { user, userBasket } = useContext(Context);
   const [isClicked, setClicked] = useState(false);
   const [inBasket, setInBasket] = useState([]);
+  const navigate = useNavigate();
   const checkInBasket = () => {
-    BasketService.getUserBasket(user.user.id).then((data) => {
-      userBasket.setBasket(data);
-      data.map((basket) => {
-        if (basket.productId === productInfo.id) {
-          setClicked(true);
-        }
+    if (user.user) {
+      BasketService.getUserBasket(user.user.id).then((data) => {
+        userBasket.setBasket(data);
+        data.map((basket) => {
+          if (basket.productId === productInfo.id) {
+            setClicked(true);
+          }
+        });
       });
-    });
+    }
 
     return isClicked;
   };
@@ -25,13 +30,16 @@ function AddToBasketButton({ productInfo }) {
     setClicked(true);
     userBasket.setBasketProduct({ ...productInfo, isInBasket: isClicked });
     console.log(userBasket.basketProduct);
-    BasketService.addToBasket(user.user.id, productInfo.id).then(() => {
-      BasketService.getUserBasket(user.user.id).then((data) => {
-        console.log(data);
-        setInBasket(data);
-        userBasket.setBasketProductNum(data.length);
+
+    if (user.isAuth && user.user) {
+      BasketService.addToBasket(user.user.id, productInfo.id).then(() => {
+        BasketService.getUserBasket(user.user.id).then((data) => {
+          console.log(data);
+          setInBasket(data);
+          userBasket.setBasketProductNum(data.length);
+        });
       });
-    });
+    }
   };
 
   return (
@@ -41,7 +49,12 @@ function AddToBasketButton({ productInfo }) {
       }}
     >
       {checkInBasket() ? (
-        <Button variant="outline-success">
+        <Button
+          variant="outline-success"
+          onClick={() => {
+            navigate(BASKET_ROUTE);
+          }}
+        >
           In basket <Basket />
         </Button>
       ) : (

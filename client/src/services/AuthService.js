@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { $axios } from "../http";
 class AuthService {
   async registration(email, password, roles) {
-    console.log('pass role for registration step2 ');
+    console.log("pass role for registration step2 ");
     console.log(roles);
     const resp = await $axios.$host.post(`/api/user/registration`, {
       email,
@@ -25,9 +25,12 @@ class AuthService {
 
   async checkAuth() {
     const { data } = await $axios.$authHost.get("/api/user/auth");
-    localStorage.setItem("token", data.token);
-    const userData = jwtDecode(data.token);
-    return userData;
+    if (data) {
+      console.log(data);
+      localStorage.setItem("token", data.token);
+      const userData = jwtDecode(data.token);
+      return userData;
+    }
   }
 
   logout() {

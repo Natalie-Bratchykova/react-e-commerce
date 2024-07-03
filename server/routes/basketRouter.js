@@ -5,6 +5,7 @@ const basketController = require("../controllers/basketController");
 
 router.get("/:userId", authMiddleware, basketController.getBasket);
 router.post("/:userId", authMiddleware, basketController.addToBasket);
-router.post("/", authMiddleware, basketController.deleteFromBasket)
+router.post("/", authMiddleware, basketController.deleteFromBasket);
+router.get("/", basketController.getAllBaskets);
 
 module.exports = router;

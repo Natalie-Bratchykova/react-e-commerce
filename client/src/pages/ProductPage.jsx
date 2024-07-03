@@ -6,24 +6,25 @@ import { observer } from "mobx-react-lite";
 import ProductService from "../services/ProductService";
 import { cutLastChar } from "../utils/helpers";
 import BasketService from "../services/BasketService";
-import { Basket, Pencil, Star, Trash } from "react-bootstrap-icons";
-import { SHOP_ROUTE } from "../utils/const";
-import EditProductModal from "../components/modals/EditProductModal";
-import AddToBasketButton from "../components/AddToBasketButton";
+import { Basket, Star, Trash } from "react-bootstrap-icons";
+import { BASKET_ROUTE, SHOP_ROUTE } from "../utils/const";
+
 function ProductPage() {
   const { product, user, userBasket } = useContext(Context);
   const location = useLocation();
   const [info, setInfo] = useState([]);
   const [inBasket, setInBasket] = useState([]);
-  const [openEdit, setOpenEdit] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
   const navigateTo = useNavigate();
 
   useEffect(() => {
     const id = location.pathname.split("/").at(-1);
-    BasketService.getUserBasket(user.user.id).then((data) => {
-      userBasket.setBasket(data);
-    });
+    if (user.user) {
+      BasketService.getUserBasket(user.user.id).then((data) => {
+        userBasket.setBasket(data);
+      });
+    }
+
     ProductService.getProductById(id).then((data) => {
       product.setProduct({ ...data, isInBasket: false });
       setCurrentProduct(data);
@@ -69,8 +70,7 @@ function ProductPage() {
     navigateTo(SHOP_ROUTE);
   };
 
-  const handleOpenEdit = () => setOpenEdit(true);
-  const handleCloseEdit = () => setOpenEdit(false);
+
   return (
     <Container
       style={{
@@ -116,7 +116,12 @@ function ProductPage() {
                   </Col>
                   <Col>
                     {checkProductInBasket().isInBasket ? (
-                      <Button variant="outline-success">
+                      <Button
+                        variant="outline-success"
+                        onClick={() => {
+                          navigateTo(BASKET_ROUTE);
+                        }}
+                      >
                         In basket <Basket />
                       </Button>
                     ) : (
@@ -136,19 +141,6 @@ function ProductPage() {
                 <Row className="d-flex justify-content-between">
                   <Col>
                     <Button
-                      onClick={() => {
-                        handleOpenEdit();
-                      }}
-                      style={{
-                        width: "100%",
-                      }}
-                      variant="success"
-                    >
-                      <Pencil />
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Button
                       style={{
                         width: "100%",
                       }}
@@ -164,11 +156,7 @@ function ProductPage() {
           </Card>
         </Col>
       </Row>
-      <EditProductModal
-        show={openEdit}
-        hide={handleCloseEdit}
-        currentProduct={currentProduct}
-      />
+    
     </Container>
   );
 }
