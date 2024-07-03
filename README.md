@@ -10,7 +10,7 @@ This is a small online shop that is written in React and Node.
 + Node.js
 + Express (express validator, express file upload libs)
 + PostgreSql
-+ Sequilize
++ Sequelize
 + JsonWebTocken
 
 ## How to run the project
